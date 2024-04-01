@@ -13,7 +13,6 @@ def index_range(page: int, page_size: int) -> Tuple[int, int]:
 
     return ((page - 1) * page_size, ((page - 1) * page_size) + page_size)
 
-
 class Server:
     """Server class to paginate a database of popular baby names.
     """
@@ -21,6 +20,7 @@ class Server:
 
     def __init__(self):
         self.__dataset = None
+        self.__indexed_dataset = None
 
     def dataset(self) -> List[List]:
         """Cached dataset
@@ -32,6 +32,17 @@ class Server:
             self.__dataset = dataset[1:]
 
         return self.__dataset
+
+    def indexed_dataset(self) -> Dict[int, List]:
+        """Dataset indexed by sorting position, starting at 0
+        """
+        if self.__indexed_dataset is None:
+            dataset = self.dataset()
+            truncated_dataset = dataset[:1000]
+            self.__indexed_dataset = {
+                i: dataset[i] for i in range(len(dataset))
+            }
+        return self.__indexed_dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
         """Retrieves a page of data.
@@ -69,3 +80,4 @@ class Server:
             'data': page_data,
         }
         return page_info
+
